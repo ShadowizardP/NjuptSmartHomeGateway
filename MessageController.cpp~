@@ -279,7 +279,7 @@ bool cameraSnap(char point, int mount, int interval)
 		useCameraPreSet(num);
 		sleep(1);
 		string path = "/home/smartp-lab/temp/snapshot/";
-		string time = zigbeeTimeToString(getTimeWithPeriod(0))
+		string time = zigbeeTimeToString(getTimeWithPeriod(0));
 		path += time;
 		cout<<path<<endl;
 		mode_t mode=0755;

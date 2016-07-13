@@ -38,6 +38,12 @@ void messageAnalysis(char message[])
 
 void dealWithDataMessage(char message[])
 {
+	int p = message[5]-'0';
+	string point;
+	stringstream streamp;
+	streamp<<p;
+	streamp>>point;
+
 	storeData(message);
 	if(message[1] == 't')
 	{
@@ -61,7 +67,7 @@ void dealWithDataMessage(char message[])
 		stream>>tem;
 
 		time = zigbeeTimeToString(OriginalTemperatureData[9].time);
-		string url = "http://192.168.1.133:8080/SmartHome/SaveTemperature?temperature=" + tem + "&time=\"" + time +"\"";
+		string url = "http://192.168.1.133:8080/SmartHome/SaveTemperature?temperature=" + tem + "&time=\"" + time +"\"&point=" + point;
 		cout<<url<<endl;
 		const char *u = url.data();
 		getUrl(u);
@@ -84,7 +90,7 @@ void dealWithDataMessage(char message[])
 		stream>>hum;
 
 		time = zigbeeTimeToString(OriginalHumidityData[9].time);
-		string url = "http://192.168.1.133:8080/SmartHome/SaveHumidity?humidity=" + hum + "&time=\"" + time +"\"";
+		string url = "http://192.168.1.133:8080/SmartHome/SaveHumidity?humidity=" + hum + "&time=\"" + time +"\"&point="+ point;
 		cout<<url<<endl;
 		const char *u = url.data();
 		getUrl(u);
