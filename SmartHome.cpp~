@@ -7,7 +7,8 @@
 #include <termios.h> /*PPSIX终端控制定义*/
 #include <errno.h> /*错误号定义*/
 #include <stdlib.h>
-#include <string.h>
+#include <string.h> 
+#include <thread> 
 //#include <pthread.h>
 using namespace std;
 
@@ -21,7 +22,8 @@ int main(int argc, char *argv[])
 	int fd, readnum;
 //	string d = "/dev/ttys0";
 //	const char *dev = d.data();
-	char *dev="/dev/ttyS0";
+	//char *dev="/dev/ttyS0";
+	char *dev="/dev/ttyUSB0";
 	char recv[100];
 	char *p = recv;
 	struct termios opt, oldopt;
@@ -31,8 +33,10 @@ int main(int argc, char *argv[])
 	tcgetattr(fd, &oldopt);
 
 	tcgetattr(fd, &opt);
-	cfsetispeed(&opt, B115200);//115200
-	cfsetospeed(&opt, B115200);
+	cfsetispeed(&opt, B38400);//115200
+	//cfsetispeed(&opt, B115200);
+	cfsetospeed(&opt, B38400);
+	//cfsetospeed(&opt, B115200);
 
 	opt.c_cflag &= ~PARENB; //N
 	opt.c_cflag &= ~INPCK;
@@ -52,15 +56,41 @@ int main(int argc, char *argv[])
 	tcsetattr(fd, TCSANOW, &opt);
 
 	//pipe(buf);
+		int i = 0;
 
 	while (1)
 	{
 		bzero(recv, 100);
-		while (read(fd, recv, 8)>0)
+		//printf("HERE");
+		char buf[100];
+		while ((readnum = read(fd,recv,1))>0)
 		{
+			//printf("HERE");
+			//printf("%d",readnum);
+			if(p[readnum] == '\0')
+			{
+			//printf("HERE");
+				//printf("i=%d\n",i);
+				if(i!=0||recv[0] == '!' ||recv[0]=='$')
+				{
+				buf[i] = recv[0];
+				i++;
+				//printf("buf=%s\n", buf/*recv*/);
+				//printf("recv=%s\n", recv);
+				}
+				if(/*i==8 && */recv[0] == '#')
+				{
+					
+				//printf("btrecv=%s\n", recv);
+					//i=0;
+					//bzero(buf,8);
+				//size += reiadnum;
+				//if(size == 8)
+				//{
+				//size = 0;
 			//memcpy(buffer[count],recv,8);
 			//write(buf[count],recv,8);
-			printf("%s\n", recv);
+			printf("%s\n", buf/*recv*/);
 			//pthread_t tid;
 			//pthread_create(&tid,NULL,progress,&count);
 			//count++;
@@ -68,8 +98,19 @@ int main(int argc, char *argv[])
 			//{
 			//	count = 0;
 			//}
-			messageAnalysis(recv);
+			std::thread t(messageAnalysis,buf/*recv*/);
+			t.detach();
 			sleep(1);
+			i=0;
+			bzero(buf,100);
+				}
+				//}
+				p=recv;
+			}
+			else
+			{
+				p+= readnum;
+			}
 		}
 	}
 

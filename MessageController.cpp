@@ -23,8 +23,10 @@ int count = 0;
 
 void messageAnalysis(char message[])
 {
+	//printf("%s\n",message);
 	if (message[0] == '$')    //数据类消息
 	{
+	//printf("HERE\n");
 		dealWithDataMessage(message);
 	}
 	else if (message[0] == '!')    //事件类消息
